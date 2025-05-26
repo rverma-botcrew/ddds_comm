@@ -3,7 +3,7 @@
 namespace dds_msgs
 {
 
-namespace msg
+namespace geometry_msgs
 {
 
 class Point
@@ -17,6 +17,6 @@ public:
   Point(double x, double y, double z) : x(x), y(y), z(z) {}
 };
 
-} // namespace msg
+} // namespace geometry_msgs
 
 } // namespace dds_geometry_msg

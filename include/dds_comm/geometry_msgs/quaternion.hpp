@@ -3,7 +3,7 @@
 namespace dds_msgs
 {
 
-namespace msg
+namespace geometry_msgs
 {
 
 class Quaternion
@@ -18,6 +18,6 @@ public:
   Quaternion(double x, double y, double z, double w) : x(x), y(y), z(z), w(w) {}
 };
 
-} // namespace msg
+} // namespace geometry_msgs
 
 } // namespace dds_msgs

@@ -6,20 +6,20 @@
 
 namespace dds_msgs
 {
-namespace msg
+namespace std_msgs
 {
 
 class Header
 {
 public:
-  Time stamp;
+  dds_msgs::time::Time stamp;
   std::string frame_id;
 
   Header() = default;
 
-  Header(const Time& stamp_, const std::string& frame_id_)
+  Header(const dds_msgs::time::Time stamp_, const std::string& frame_id_)
       : stamp(stamp_), frame_id(frame_id_) {}
 };
 
-}  // namespace msg
+}  // namespace std_msgs
 }  // namespace dds_msgs

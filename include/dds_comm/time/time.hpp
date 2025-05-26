@@ -5,7 +5,7 @@
 namespace dds_msgs
 {
 
-namespace msg
+namespace time
 {
 
 class Time
@@ -19,7 +19,6 @@ public:
   Time(int32_t sec, uint32_t nanosec) : sec(sec), nanosec(nanosec) {}
 };
   
-} // namespace msg
-
+} // namespace time
   
 } // namespace dds_msgs

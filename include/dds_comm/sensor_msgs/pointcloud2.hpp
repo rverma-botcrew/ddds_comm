@@ -9,13 +9,13 @@
 namespace dds_msgs
 {
 
-namespace msg
+namespace sensor_msgs
 {
 
 class PointCloud2
 {
 public:
-  Header header;
+  dds_msgs::std_msgs::Header header;
   uint32_t height;
   uint32_t width;
 
@@ -32,7 +32,7 @@ public:
 
   PointCloud2() = default;
 
-  PointCloud2(const Header& header_,
+  PointCloud2(const dds_msgs::std_msgs::Header& header_,
               uint32_t height_,
               uint32_t width_,
               const std::vector<PointField>& fields_,
@@ -52,6 +52,6 @@ public:
         is_dense(is_dense_) {}
 };
 
-} // namespace msg
+} // namespace sensor_msgs
 
 } // namespace dds_msgs

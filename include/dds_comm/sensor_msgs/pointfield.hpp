@@ -5,7 +5,7 @@
 
 namespace dds_msgs
 {
-namespace msg
+namespace sensor_msgs
 {
 
 class PointField
@@ -31,6 +31,6 @@ public:
       : name(name_), offset(offset_), datatype(datatype_), count(count_) {}
 };
 
-} // namespace msg
+} // namespace sensor_msgs
 
 } // namespace dds_msgs

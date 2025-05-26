@@ -5,17 +5,17 @@
 
 namespace dds_msgs
 {
-namespace msg
+namespace geometry_msgs
 {
 class PoseStamped
 {
 public:
-  Header header;
-  Pose pose;
+  dds_msgs::std_msgs::Header header;
+  dds_msgs::geometry_msgs::Pose pose;
 
   PoseStamped() = default;
 
-  PoseStamped(const Header& header_, const Pose& pose_)
+  PoseStamped(const dds_msgs::std_msgs::Header& header_, const dds_msgs::geometry_msgs::Pose& pose_)
       : header(header_), pose(pose_) {}
 };
 

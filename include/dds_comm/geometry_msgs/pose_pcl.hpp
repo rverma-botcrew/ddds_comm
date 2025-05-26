@@ -12,12 +12,12 @@ namespace msg
 class PosePCL
 {
 public:
-  PoseStamped pose;
-  PointCloud2 pcl;
+  dds_msgs::geometry_msgs::PoseStamped pose;
+  dds_msgs::sensor_msgs::PointCloud2 pcl;
 
   PosePCL() = default;
 
-  PosePCL(const PoseStamped& pose_, const PointCloud2& pcl_)
+  PosePCL(const dds_msgs::geometry_msgs::PoseStamped& pose_, const dds_msgs::sensor_msgs::PointCloud2& pcl_)
       : pose(pose_), pcl(pcl_) {}
 };
 
