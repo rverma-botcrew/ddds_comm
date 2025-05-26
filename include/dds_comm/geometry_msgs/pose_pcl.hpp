@@ -6,7 +6,7 @@
 namespace dds_msgs
 {
 
-namespace msg
+namespace geometry_msgs
 {
 
 class PosePCL
