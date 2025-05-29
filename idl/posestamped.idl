@@ -1,6 +1,18 @@
 module pose_msgs {
 
   @extensibility(APPENDABLE)
+  struct Time {
+    int32 sec;
+    uint32 nanosec;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Header {
+    Time stamp;
+    string<256> frame_id;
+  };
+
+  @extensibility(APPENDABLE)
   struct Point {
     double x;
     double y;
@@ -20,5 +32,14 @@ module pose_msgs {
     Point position;
     Quaternion orientation;
   };
+
+  @extensibility(APPENDABLE)
+  struct PoseStamped {
+    Header header;
+    Pose pose;
+  };
+
+  @extensibility(APPENDABLE)
+  struct 
 
 };

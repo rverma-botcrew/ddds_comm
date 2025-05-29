@@ -1,38 +1,34 @@
 #include <iostream>
-#include <chrono>
+#include <ddscxx/dds/dds.hpp>
+#include "posestamped.hpp"
 #include <thread>
 
-#include <ddscxx/dds/dds.hpp>
-#include "pose.hpp"  // From generated/
 
 int main() {
   dds::domain::DomainParticipant participant(0);
-  dds::topic::Topic<pose_msgs::Pose> topic(participant, "PoseTopic");
-
+  dds::topic::Topic<pose_msgs::PoseStamped> topic(participant, "PoseStampedTopic");
   dds::sub::Subscriber subscriber(participant);
-  dds::sub::DataReader<pose_msgs::Pose> reader(subscriber, topic);
+  dds::sub::DataReader<pose_msgs::PoseStamped> reader(subscriber, topic);
 
-  std::cout << "[Subscriber] Listening for poses on 'PoseTopic'...\n";
+  std::cout << "Listening on 'PoseStampedTopic'...\n";
 
   while (true) {
     auto samples = reader.take();
-
     for (const auto &sample : samples) {
       if (sample.info().valid()) {
-        const auto &pose = sample.data();
+        const auto &msg = sample.data();
+        const auto &hdr = msg.header();
+        const auto &pose = msg.pose();
 
-        const auto &pos = pose.position();
-        const auto &orient = pose.orientation();
-
-        std::cout << "Received DDS Pose:\n"
-                  << "  Position: (" << pos.x() << ", " << pos.y() << ", " << pos.z() << ")\n"
-                  << "  Orientation: (" << orient.x() << ", " << orient.y() << ", "
-                  << orient.z() << ", " << orient.w() << ")\n";
+        std::cout << "Received PoseStamped\n"
+                  << "  Frame ID: " << hdr.frame_id() << "\n"
+                  << "  Time: " << hdr.stamp().sec() << "." << hdr.stamp().nanosec() << "\n"
+                  << "  Position: (" << pose.position().x() << ", " << pose.position().y() << ", " << pose.position().z() << ")\n"
+                  << "  Orientation: (" << pose.orientation().x() << ", " << pose.orientation().y() << ", "
+                  << pose.orientation().z() << ", " << pose.orientation().w() << ")\n";
       }
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
-
-  return 0;
 }
