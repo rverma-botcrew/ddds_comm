@@ -1,8 +1,0 @@
-module pose_msgs {
-  @extensibility(APPENDABLE)
-  struct Point {
-    double x;
-    double y;
-    double z;
-  };
-};

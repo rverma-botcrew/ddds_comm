@@ -23,7 +23,7 @@ set(GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 # --- Build executable ---
 add_executable(point_bridge
   src/point_bridge.cc
-  ${GEN_DIR}/point.cpp
+  ${GEN_DIR}/pose.cpp
 )
 
 ament_target_dependencies(point_bridge
@@ -49,7 +49,7 @@ install(TARGETS point_bridge
 
 add_executable(point_subscriber
   src/point_subscriber.cc
-  ${GEN_DIR}/point.cpp
+  ${GEN_DIR}/pose.cpp
 )
 
 target_include_directories(point_subscriber PRIVATE

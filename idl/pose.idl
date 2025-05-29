@@ -1,0 +1,24 @@
+module pose_msgs {
+
+  @extensibility(APPENDABLE)
+  struct Point {
+    double x;
+    double y;
+    double z;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Quaternion {
+    double x;
+    double y;
+    double z;
+    double w;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Pose {
+    Point position;
+    Quaternion orientation;
+  };
+
+};

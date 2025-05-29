@@ -2,61 +2,67 @@
 #include <chrono>
 #include <ddscxx/dds/dds.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <geometry_msgs/msg/point.hpp>
 
 #include <dds_comm/mypoint.hpp>
 
-#include "point.hpp"
+#include "pose.hpp"
 
-class PointBridge : public rclcpp::Node {
+#include <geometry_msgs/msg/pose.hpp>
+
+class PoseBridge : public rclcpp::Node {
+public:
+  PoseBridge()
+  : Node("pose_bridge"),
+    dds_participant_(0),
+    dds_topic_(dds_participant_, "PoseTopic"),
+    dds_publisher_(dds_participant_),
+    dds_writer_(dds_publisher_, dds_topic_)
+  {
+    pose_sub_ = this->create_subscription<geometry_msgs::msg::Pose>(
+      "pose_topic", 10, std::bind(&PoseBridge::ros_callback, this, std::placeholders::_1));
+
+    RCLCPP_INFO(this->get_logger(), "DDS Pose bridge initialized.");
+  }
 
 private:
-  void ros_callback(const geometry_msgs::msg::Point::SharedPtr msg) {
-    pose_msgs::Point dds_point;
-    dds_point.x(msg->x);
-    dds_point.y(msg->y);
-    dds_point.z(msg->z);
+  void ros_callback(const geometry_msgs::msg::Pose::SharedPtr msg) {
+    pose_msgs::Pose dds_pose;
 
-    dds_writer_->write(dds_point);
+    // Set position
+    auto &pos = dds_pose.position();
+    pos.x(msg->position.x);
+    pos.y(msg->position.y);
+    pos.z(msg->position.z);
 
-    // RCLCPP_INFO(this->get_logger(), "Received Point: x=%f, y=%f, z=%f", 
-    //             msg->x, msg->y, msg->z);
+    // Set orientation
+    auto &orient = dds_pose.orientation();
+    orient.x(msg->orientation.x);
+    orient.y(msg->orientation.y);
+    orient.z(msg->orientation.z);
+    orient.w(msg->orientation.w);
+
+    dds_writer_.write(dds_pose);
+
+    RCLCPP_INFO(this->get_logger(), "Bridged Pose:\n"
+                                    "  Position: (%.2f, %.2f, %.2f)\n"
+                                    "  Orientation: (%.2f, %.2f, %.2f, %.2f)",
+                                    pos.x(), pos.y(), pos.z(),
+                                    orient.x(), orient.y(), orient.z(), orient.w());
   }
 
-  rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr point_sub_;
+  rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr pose_sub_;
 
-  // DDS components
   dds::domain::DomainParticipant dds_participant_;
-  dds::topic::Topic<pose_msgs::Point> dds_topic_;
+  dds::topic::Topic<pose_msgs::Pose> dds_topic_;
   dds::pub::Publisher dds_publisher_;
-  dds::pub::DataWriter<pose_msgs::Point> dds_writer_;
-
-public:
-  PointBridge() : 
-  Node("point_bridge"),
-  dds_participant_(0),
-  dds_topic_(dds_participant_, "PointTopic"),
-  dds_publisher_(dds_participant_),
-  dds_writer_(dds_publisher_, dds_topic_) {
-    point_sub_ = this->create_subscription<geometry_msgs::msg::Point>(
-      "point_topic", 10, std::bind(&PointBridge::ros_callback, this, std::placeholders::_1));
-
-    // // Initialize DDS components
-    // dds_participant_ = std::make_unique<dds::domain::DomainParticipant>(0);
-    // dds_topic_ = std::make_unique<dds::topic::Topic<pose_msgs::Point>>(
-    //   *dds_participant_.get(), "PointTopic");
-    // dds_publisher_ = std::make_unique<dds::pub::Publisher>(*dds_participant_.get());
-    // dds_writer_ = std::make_unique<dds::pub::DataWriter<pose_msgs::Point>>(
-    //   *dds_publisher_.get(), *dds_topic_.get());
-
-    RCLCPP_INFO(this->get_logger(), "PointBridge initialized and ready to receive messages.");
-  }
+  dds::pub::DataWriter<pose_msgs::Pose> dds_writer_;
 };
+
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   
-  auto node = std::make_shared<PointBridge>();
+  auto node = std::make_shared<PoseBridge>();
   
   rclcpp::spin(node);
   
