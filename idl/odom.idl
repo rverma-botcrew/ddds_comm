@@ -1,0 +1,89 @@
+module odom_msgs {
+
+  @extensibility(APPENDABLE)
+  struct Time {
+    int32 sec;
+    uint32 nanosec;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Header {
+    Time stamp;
+    string<256> frame_id;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Point {
+    double x;
+    double y;
+    double z;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Quaternion {
+    double x;
+    double y;
+    double z;
+    double w;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Pose {
+    Point position;
+    Quaternion orientation;
+  };
+
+  @extensibility(APPENDABLE)
+  struct Twist {
+    Point linear;
+    Point angular;
+  };
+
+  @extensibility(APPENDABLE)
+  struct PoseWithCovariance {
+    Pose pose;
+    double covariance[36];
+  };
+
+  @extensibility(APPENDABLE)
+  struct TwistWithCovariance {
+    Twist twist;
+    double covariance[36];
+  };
+
+  @extensibility(APPENDABLE)
+  struct Odometry {
+    Header header;
+    string<256> child_frame_id;
+    PoseWithCovariance pose;
+    TwistWithCovariance twist;
+  };
+
+  @extensibility(APPENDABLE)
+  struct PointField {
+    string<128> name;
+    uint32 offset;
+    uint8 datatype;
+    uint32 count;
+  };
+
+  @extensibility(APPENDABLE)
+  struct PointCloud2 {
+    Header header;
+    uint32 height;
+    uint32 width;
+    sequence<PointField, 64> fields;
+    boolean is_bigendian;
+    uint32 point_step;
+    uint32 row_step;
+    sequence<uint8, 1048576> data;
+    boolean is_dense;
+  };
+
+  @extensibility(APPENDABLE)
+  struct OdometryPointCloud {
+    Odometry odom;
+    PointCloud2 pcl;
+  };
+
+};
