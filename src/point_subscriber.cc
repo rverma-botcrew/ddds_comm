@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <chrono>
 #include <ddscxx/dds/dds.hpp>
 #include "odom_pcl.hpp"  // Generated from OdometryPointCloud.idl
 
@@ -11,12 +12,26 @@ int main() {
 
   std::cout << "📡 Listening on 'OdometryPointCloudTopic'...\n";
 
+  auto last_time = std::chrono::steady_clock::now();
+  double average_frequency = 0.0;
+  int sample_count = 0;
+
   while (true) {
     auto samples = reader.take();
 
     for (const auto &sample : samples) {
       if (sample.info().valid()) {
         const auto &msg = sample.data();
+
+        // Calculate frequency
+        auto now = std::chrono::steady_clock::now();
+        std::chrono::duration<double> dt = now - last_time;
+        last_time = now;
+
+        double frequency = 1.0 / dt.count();
+        average_frequency = (average_frequency * sample_count + frequency) / (sample_count + 1);
+        sample_count++;
+        std::cout << "📊 Average Frequency: " << average_frequency << " Hz\n";
 
         // === Odometry ===
         const auto &odom = msg.odom();

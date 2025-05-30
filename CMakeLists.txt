@@ -127,5 +127,21 @@ install(TARGETS point_subscriber
   DESTINATION lib/${PROJECT_NAME}
 )
 
+add_executable(dummy_odom_publisher
+  src/dummy_odom_publisher.cpp
+  # ${GEN_DIR}/odom_pcl.cpp
+)
+
+ament_target_dependencies(dummy_odom_publisher
+  rclcpp
+  geometry_msgs
+  sensor_msgs
+  message_filters
+  nav_msgs
+)
+
+install(TARGETS dummy_odom_publisher
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()
