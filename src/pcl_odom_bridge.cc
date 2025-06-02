@@ -40,19 +40,23 @@ public:
       this, "/velodyne_points", custom_qos_profile);
 
     // OPTIONAL: Debug print on individual messages
-    odom_sub_->registerCallback([](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
-      RCLCPP_INFO(rclcpp::get_logger("odom_cb"), "📨 /odom received @ %u.%u",
-                  msg->header.stamp.sec, msg->header.stamp.nanosec);
-    });
+    // odom_sub_->registerCallback([](const nav_msgs::msg::Odometry::ConstSharedPtr msg) {
+    //   RCLCPP_INFO(rclcpp::get_logger("odom_cb"), "📨 /odom received @ %u.%u",
+    //               msg->header.stamp.sec, msg->header.stamp.nanosec);
+    // });
 
-    pcl_sub_->registerCallback([](const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) {
-      RCLCPP_INFO(rclcpp::get_logger("pcl_cb"), "📨 /velodyne_points received @ %u.%u",
-                  msg->header.stamp.sec, msg->header.stamp.nanosec);
-    });
+    // pcl_sub_->registerCallback([](const sensor_msgs::msg::PointCloud2::ConstSharedPtr msg) {
+    //   RCLCPP_INFO(rclcpp::get_logger("pcl_cb"), "📨 /velodyne_points received @ %u.%u",
+    //               msg->header.stamp.sec, msg->header.stamp.nanosec);
+    // });
 
     // Synchronizer with slop
+    // sync_ = std::make_shared<Synchronizer<SyncPolicy>>(SyncPolicy(10), *odom_sub_, *pcl_sub_);
+    // sync_->setMaxIntervalDuration(rclcpp::Duration::from_seconds(0.1));  // 100ms slop
     sync_ = std::make_shared<Synchronizer<SyncPolicy>>(SyncPolicy(10), *odom_sub_, *pcl_sub_);
-    sync_->setMaxIntervalDuration(rclcpp::Duration::from_seconds(0.1));
+    sync_->setMaxIntervalDuration(rclcpp::Duration::from_seconds(0.075));
+
+
     sync_->registerCallback(std::bind(&OdomPCLBridge::callback, this, std::placeholders::_1, std::placeholders::_2));
     
     status_pub_ = this->create_publisher<std_msgs::msg::String>("dds_bridge_status", 10);
@@ -65,8 +69,8 @@ private:
     const nav_msgs::msg::Odometry::ConstSharedPtr odom_msg,
     const sensor_msgs::msg::PointCloud2::ConstSharedPtr pcl_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "🔄 Synced /odom + /velodyne_points @ [%u.%u]",
-                odom_msg->header.stamp.sec, odom_msg->header.stamp.nanosec);
+    // RCLCPP_INFO(this->get_logger(), "🔄 Synced /odom + /velodyne_points @ [%u.%u]",
+    //             odom_msg->header.stamp.sec, odom_msg->header.stamp.nanosec);
 
     odom_msgs::OdometryPointCloud dds_msg;
     auto &dds_odom = dds_msg.odom();
@@ -134,7 +138,9 @@ private:
     pc.is_dense(pcl_msg->is_dense);
 
     try {
+      RCLCPP_INFO(this->get_logger(), "Before DDS write: %.9f", now().seconds());
       dds_writer_.write(dds_msg);
+      RCLCPP_INFO(this->get_logger(), "After DDS write: %.9f", now().seconds());
       RCLCPP_INFO(this->get_logger(), "✅ DDS write successful");
 
       auto status_msg = std_msgs::msg::String();
@@ -143,6 +149,10 @@ private:
     } catch (const std::exception &e) {
       RCLCPP_ERROR(this->get_logger(), "❌ DDS write failed: %s", e.what());
     }
+
+    // double dt = std::abs((odom_msg->header.stamp - pcl_msg->header.stamp).seconds());
+    // RCLCPP_INFO(this->get_logger(), "🧪 Synced delta time: %.3f sec", dt);
+
   }
 
   // Subscribers
@@ -165,7 +175,11 @@ private:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<OdomPCLBridge>());
+  auto node = std::make_shared<OdomPCLBridge>();
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+  executor.spin();
   rclcpp::shutdown();
   return 0;
 }
+

@@ -22,70 +22,13 @@ find_package(iceoryx_binding_c CONFIG REQUIRED)
 
 set(GEN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated")
 
-
-# # --- Build executable ---
-# add_executable(point_bridge
-#   src/point_bridge.cc
-#   ${GEN_DIR}/posestamped.cpp
-# )
-
-# ament_target_dependencies(point_bridge
-#   rclcpp
-#   geometry_msgs
-# )
-
-# target_include_directories(point_bridge PRIVATE
-#   ${GEN_DIR}
-#   $ENV{CXX_INSTALL}/include
-#   ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
-
-# target_link_libraries(point_bridge
-#   CycloneDDS-CXX::ddscxx
-#   iceoryx_binding_c::iceoryx_binding_c
-# )
-
-# # --- Install executable ---
-# install(TARGETS point_bridge
-#   DESTINATION lib/${PROJECT_NAME}
-# )
-
 # --- Build executable ---
-# add_executable(odom_pcl_bridge
-#   src/odom_pcl_bridge.cc
-#   ${GEN_DIR}/posestamped.cpp
-# )
-
-# ament_target_dependencies(odom_pcl_bridge
-#   rclcpp
-#   geometry_msgs
-#   sensor_msgs
-#   message_filters
-# )
-
-# target_include_directories(odom_pcl_bridge PRIVATE
-#   ${GEN_DIR}
-#   $ENV{CXX_INSTALL}/include
-#   ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
-
-# target_link_libraries(odom_pcl_bridge
-#   CycloneDDS-CXX::ddscxx
-#   iceoryx_binding_c::iceoryx_binding_c
-# )
-
-# # --- Install executable ---
-# install(TARGETS odom_pcl_bridge
-#   DESTINATION lib/${PROJECT_NAME}
-# )
-
-# --- Build executable ---
-add_executable(pose_pcl_bridge
-  src/pose_pcl_bridge.cc
+add_executable(pcl_odom_bridge
+  src/pcl_odom_bridge.cc
   ${GEN_DIR}/odom_pcl.cpp
 )
 
-ament_target_dependencies(pose_pcl_bridge
+ament_target_dependencies(pcl_odom_bridge
   rclcpp
   geometry_msgs
   sensor_msgs
@@ -93,37 +36,37 @@ ament_target_dependencies(pose_pcl_bridge
   nav_msgs
 )
 
-target_include_directories(pose_pcl_bridge PRIVATE
+target_include_directories(pcl_odom_bridge PRIVATE
   ${GEN_DIR}
   $ENV{CXX_INSTALL}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-target_link_libraries(pose_pcl_bridge
+target_link_libraries(pcl_odom_bridge
   CycloneDDS-CXX::ddscxx
   iceoryx_binding_c::iceoryx_binding_c
 )
-install(TARGETS pose_pcl_bridge
+install(TARGETS pcl_odom_bridge
   DESTINATION lib/${PROJECT_NAME}
 )
 
 
-add_executable(point_subscriber
-  src/point_subscriber.cc
+add_executable(pcl_odom_subscriber
+  src/pcl_odom_subscriber.cc
   ${GEN_DIR}/odom_pcl.cpp
 )
 
-target_include_directories(point_subscriber PRIVATE
+target_include_directories(pcl_odom_subscriber PRIVATE
   ${GEN_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   $ENV{CXX_INSTALL}/include
 )
 
-target_link_libraries(point_subscriber
+target_link_libraries(pcl_odom_subscriber
   CycloneDDS-CXX::ddscxx
   iceoryx_binding_c::iceoryx_binding_c
 )
 
-install(TARGETS point_subscriber
+install(TARGETS pcl_odom_subscriber
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -143,5 +86,22 @@ ament_target_dependencies(dummy_odom_publisher
 install(TARGETS dummy_odom_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# add_executable(synchronizer
+#   src/synchronizer.cpp
+#   # ${GEN_DIR}/odom_pcl.cpp
+# )
+
+# ament_target_dependencies(synchronizer
+#   rclcpp
+#   geometry_msgs
+#   sensor_msgs
+#   message_filters
+#   nav_msgs
+# )
+
+# install(TARGETS synchronizer
+#   DESTINATION lib/${PROJECT_NAME}
+# )
 
 ament_package()
