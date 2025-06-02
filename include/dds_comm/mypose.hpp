@@ -6,6 +6,7 @@
 
 class MyPose
 {
+public:
     MyPoint position;
     MyQuaternion orientation;
 
