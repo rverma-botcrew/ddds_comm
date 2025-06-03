@@ -86,4 +86,21 @@ module odom_msgs {
     PointCloud2 pcl;
   };
 
+  @extensibility(APPENDABLE)
+  struct Image {
+    Header header;
+    uint32 height;
+    uint32 width;
+    string<16> encoding;
+    uint8 is_bigendian;
+    uint32 step;
+    sequence<uint8, 1048576> data;
+  };
+
+  @extensibility(APPENDABLE)
+  struct OdometryImage {
+    Odometry odom;
+    Image image;
+  };
+
 };

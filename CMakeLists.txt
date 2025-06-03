@@ -70,6 +70,54 @@ install(TARGETS pcl_odom_subscriber
   DESTINATION lib/${PROJECT_NAME}
 )
 
+add_executable(image_odom_bridge
+  src/image_odom_bridge.cc
+  ${GEN_DIR}/odom_pcl.cpp
+)
+
+ament_target_dependencies(image_odom_bridge
+  rclcpp
+  geometry_msgs
+  sensor_msgs
+  message_filters
+  nav_msgs
+)
+
+target_include_directories(image_odom_bridge PRIVATE
+  ${GEN_DIR}
+  $ENV{CXX_INSTALL}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(image_odom_bridge
+  CycloneDDS-CXX::ddscxx
+  iceoryx_binding_c::iceoryx_binding_c
+)
+
+install(TARGETS image_odom_bridge
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+add_executable(image_odom_subscriber
+  src/image_odom_subscriber.cc
+  ${GEN_DIR}/odom_pcl.cpp
+)
+
+target_include_directories(image_odom_subscriber PRIVATE
+  ${GEN_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  $ENV{CXX_INSTALL}/include
+)
+
+target_link_libraries(image_odom_subscriber
+  CycloneDDS-CXX::ddscxx
+  iceoryx_binding_c::iceoryx_binding_c
+)
+
+install(TARGETS image_odom_subscriber
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 add_executable(dummy_odom_publisher
   src/dummy_odom_publisher.cpp
   # ${GEN_DIR}/odom_pcl.cpp
@@ -86,22 +134,5 @@ ament_target_dependencies(dummy_odom_publisher
 install(TARGETS dummy_odom_publisher
   DESTINATION lib/${PROJECT_NAME}
 )
-
-# add_executable(synchronizer
-#   src/synchronizer.cpp
-#   # ${GEN_DIR}/odom_pcl.cpp
-# )
-
-# ament_target_dependencies(synchronizer
-#   rclcpp
-#   geometry_msgs
-#   sensor_msgs
-#   message_filters
-#   nav_msgs
-# )
-
-# install(TARGETS synchronizer
-#   DESTINATION lib/${PROJECT_NAME}
-# )
 
 ament_package()
